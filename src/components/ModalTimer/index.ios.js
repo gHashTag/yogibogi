@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { StyleSheet, Modal, Text, TouchableOpacity, Picker, View } from 'react-native'
 import { BlurView } from 'react-native-blur'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   }
 })
 
-const ModalTimer = ({ data, visible, onPressDone, onPressCancel, updateTimer, timer }) => {
+const ModalTimer = memo (({ data, visible, onPressDone, onPressCancel, updateTimer, timer }) => {
   const { container, cancel, done, modal, subModal, item } = styles
   return (
     <View style={container}>
@@ -81,6 +81,6 @@ const ModalTimer = ({ data, visible, onPressDone, onPressCancel, updateTimer, ti
       </Modal>
     </View>
   )
-}
+})
 
 export { ModalTimer }

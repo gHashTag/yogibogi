@@ -4,7 +4,7 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import { createStore, applyMiddleware } from 'redux'
 import ReduxThunk from 'redux-thunk'
 import reducers from './reducers'
-import RadioScreen from './screen/RadioScreen'
+import RadioScreen from './screen/RadioScreen' // eslint-disable-line
 
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(ReduxThunk)))
 

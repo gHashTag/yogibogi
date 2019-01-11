@@ -24,10 +24,12 @@
     "jsxBracketSameLine": false
   },
   "dependencies": {
+    "moment": "^2.23.0",
     "prop-types": "^15.6.2",
     "react": "16.6.1",
     "react-native": "0.57.5",
     "react-native-audio-stream": "^2.6.1",
+    "react-native-background-timer": "^2.1.1",
     "react-native-blur": "https://github.com/gHashTag/react-native-blur.git",
     "react-native-iphone-x-helper": "^1.2.0",
     "react-native-linear-gradient": "^2.4.4",

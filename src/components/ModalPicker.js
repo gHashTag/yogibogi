@@ -39,7 +39,7 @@ class ModalPicker extends PureComponent {
   state = { 
     visible: false,
     visibleTimer: false,
-    timer: 10
+    timer: '10'
   }
 
   _toggleModal = () => this.setState(({ visible }) => ({ visible: !visible }))
@@ -55,7 +55,6 @@ class ModalPicker extends PureComponent {
   _onPressDone = () => {
     this.props.timerRange(this.state.timer)
     this._toggleModalTimer()
-    this.props.startTimer()
   }
 
   _updateTimer = itemValue => this.setState({ timer: itemValue })

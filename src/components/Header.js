@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-navigation'
 import Entypo from 'react-native-vector-icons/Entypo'
@@ -65,18 +65,13 @@ const styles = StyleSheet.create({
   }
 })
 
-const Header = ({
+const Header = memo(({
   iconLeft,
   iconRight,
   colorLeft,
   colorRight = '#fff',
   title,
-  onPress,
-  totalDuration,
-  start,
-  reset,
-  handleFinish,
-  getTime
+  onPress
 }) => {
   const { container, textStyle, iconLeftStyle, rightIconStyle, leftButtonView, rightButtonView, titleView } = styles
   return (
@@ -91,21 +86,13 @@ const Header = ({
         )}
       </View>
       <View style={titleView}>
-        {totalDuration < 7200001 && (
-          <Timer
-            totalDuration={totalDuration}
-            start={start}
-            reset={reset}
-            handleFinish={handleFinish}
-            getTime={getTime}
-          />
-        )}
+        <Timer />
       </View>
       <View style={rightButtonView}>
         {iconRight && <Entypo name={iconRight} style={[rightIconStyle, { color: colorRight }]} />}
       </View>
     </SafeAreaView>
   )
-}
+})
 
 export { Header }

@@ -1,12 +1,16 @@
-import React, { PureComponent } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import React, { Component } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import { connect } from 'react-redux'
+import moment from 'moment'
+import BackgroundTimer from 'react-native-background-timer'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
+import { timerTick, stopStreamAndroid } from '../actions'
 
 const styles = StyleSheet.create({
   container: {
     ...ifIphoneX(
       {
-        paddingTop: 7 
+        paddingTop: 7
       },
       {
         paddingTop: 38
@@ -29,7 +33,6 @@ const styles = StyleSheet.create({
     padding: 3
   },
   text: {
-    paddingTop: 1,
     fontSize: 13,
     width: 20,
     textAlign: 'center',
@@ -37,103 +40,75 @@ const styles = StyleSheet.create({
   }
 })
 
-class Timer extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      remainingTime: props.totalDuration
-    }
+class Timer extends Component {
+  shouldComponentUpdate(nextProps) {
+    const shouldUpdate = nextProps.tick !== this.props.tick
+    return shouldUpdate
   }
 
-  componentDidMount() {
-    if(this.props.start) {
-      this.start()
-    }
-  }
-
-  componentWillReceiveProps(newProps) {
-    if(newProps.start) {
-      this.start()
-    } else {
-      this.stop()
-    }
-    if(newProps.reset) {
-      this.reset(newProps.totalDuration)
+  componentWillUpdate(nextProps) {
+    if (nextProps.status === 1) {
+      const intervalId = BackgroundTimer.setInterval(() => {
+        console.log('tic')
+        const { tick, status } = this.props
+        switch (true) {
+          case tick > 0:
+            this.props.timerTick(tick - 1)
+            break
+          default:
+            status !== 2 && this.props.stopStreamAndroid()
+            BackgroundTimer.clearInterval(intervalId)
+        }
+      }, 1000)
     }
   }
 
   componentWillUnmount() {
-     if (this.interval) {
-        this.stop()
-     }
+    BackgroundTimer.stopBackgroundTimer()
   }
 
-  start = () => {
-    const endTime = new Date().getTime() + this.state.remainingTime
-    this.interval = setInterval(() => {
-      const remaining = endTime - new Date()
-      if(remaining <= 1000) {
-        this.setState({ remainingTime: 0 })
-        this.stop()
-        this.props.handleFinish()
-        return
-      }
-      this.setState({ remainingTime: remaining })
-    }, 1)
-  }
-
-  stop = () => {
-    clearInterval(this.interval)
-  }
-
-  reset = (newDuration) => {
-    const { totalDuration } = this.props
-    this.setState({ remainingTime: totalDuration !== newDuration ?  newDuration : totalDuration })
-  }
-
-  formatTime = () => {
-    const now = this.state.remainingTime
+  formatTime = seconds => {
+    const dur = moment.duration(seconds, 'second')
     const { floor } = Math
-    let seconds = floor(now / 1000)
-    let minutes = floor(now / 60000)
-    const hours = floor(now / 3600000)
-    seconds -= (minutes * 60)
-    minutes -= (hours * 60)
-
-    const { getTime } = this.props
-    const formatted = `${hours < 10 ? 0 : ""}${hours}:${minutes < 10 ?
-      0 : ""}${minutes}:${seconds < 10 ? 0 : ""}${seconds}`
-
-    if (typeof getTime === "function")
-      getTime(formatted)
-
-    return formatted
+    const hours = floor(dur.asHours())
+    const mins = floor(dur.asMinutes()) - hours * 60
+    const sec = floor(dur.asSeconds()) - hours * 60 * 60 - mins * 60
+    const len = digit => (digit.toString().length === 1 ? `0${digit}` : digit)
+    return [len(hours), len(mins), len(sec)]
   }
 
   render() {
     const { container, semi, text, sub } = styles
-    const arr = this.formatTime().split(':') 
-    const { start } = this.props
-    return(
+    const { tick } = this.props
+    const arr = this.formatTime(tick)
+    return (
       <View>
-        { start &&
-        <View style={container}>
-          <View style={sub}>
-            <Text style={text}>{arr[0]}</Text>
+        {tick > 0 && (
+          <View style={container}>
+            <View style={sub}>
+              <Text style={text}>{arr[0]}</Text>
+            </View>
+            <Text style={semi}>:</Text>
+            <View style={sub}>
+              <Text style={text}>{arr[1]}</Text>
+            </View>
+            <Text style={semi}>:</Text>
+            <View style={sub}>
+              <Text style={text}>{arr[2]}</Text>
+            </View>
           </View>
-          <Text style={semi}>:</Text>
-          <View style={sub}>
-            <Text style={text}>{arr[1]}</Text>
-          </View>
-          <Text style={semi}>:</Text>
-          <View style={sub}>
-            <Text style={text}>{arr[2]}</Text>
-          </View>
-        </View>
-        }
+        )}
       </View>
     )
   }
 }
 
-export { Timer }
+const mapStateToProps = ({ timerReducer }) => ({
+  tick: timerReducer.tick,
+  status: timerReducer.status
+})
+
+export default connect(
+  mapStateToProps,
+  { timerTick, stopStreamAndroid }
+)(Timer)

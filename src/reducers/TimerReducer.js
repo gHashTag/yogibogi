@@ -1,9 +1,12 @@
 import {
-  TIMER_RANGE
+  TIMER_RANGE,
+  TIMER_TICK,
+  STREAM_STOP
 } from '../types'
 
 const INITIAL_STATE = {
-  time: 900000000000000
+  status: 0,
+  tick: 0
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -11,7 +14,20 @@ export default (state = INITIAL_STATE, action) => {
     case TIMER_RANGE:
       return {
         ...state,
-        time: Number(action.payload) * 60000
+        status: state.tick === 0 ? 1 : 2, 
+        tick: (Number(action.payload) + 1) * 5 
+        //tick: (Number(action.payload) + 1) * 600
+      }
+    case TIMER_TICK:
+      return {
+        ...state,
+        status: state.tick === 0 ? 1 : 0, 
+        tick: action.payload
+      }
+    case STREAM_STOP:
+      return {
+        ...state,
+        status: 2 
       }
     default: return state
   }

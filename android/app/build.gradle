@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-background-timer')
     compile project(':react-native-wheel-picker')
     compile project(':react-native-audio-stream')
     compile project(':react-native-blur')
