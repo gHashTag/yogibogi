@@ -9,7 +9,6 @@ const data1 = [{ key: 1, label: 'Timer' }, { key: 2, label: 'Alarm' }]
 
 class RadioScreen extends PureComponent {
   _onChangeSender = ({ label }) => {
-    console.log('label', label)
     if (label === 'Timer') {
       // call timer
     } else {
@@ -21,7 +20,7 @@ class RadioScreen extends PureComponent {
     return (
       <Snap>
         <ModalPicker data={data1} initValue="Select" onChange={this._onChangeSender}>
-          <Header title="YogiBogi" iconRight="stopwatch" />
+          <Header title="@gHashTag" iconRight="stopwatch" />
         </ModalPicker>
       </Snap>
     )
